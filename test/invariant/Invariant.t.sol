@@ -28,5 +28,16 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
       //create these initail x and y balances
         poolToken.mint(address(pool), uint256(STARTING_X));
         mockWeth.mint(address(pool), uint256(STARTING_Y));
+
+        poolToken.approve(address(pool), type(uint256).max);
+        mockWeth.approve(address(pool), type(uint256).max);
+
+        //Deposit imto the pool,give the starting x and y balances
+        pool.deposit(uint256(STARTING_Y), uint256(STARTING_Y), uint256(STARTING_X),uint64(block.timestamp));
+
+    }
+
+    function invariant_constantProductFormulaStaysTrue() public{
+        
     }
 }
