@@ -5,30 +5,30 @@ import { Test, console } from "forge-std/Test.sol";
 import { PoolFactory } from "src/PoolFactory.sol";
 import { ERC20Mock } from "../mocks/Erc20.sol";
 import { TSwapPool } from "src/TSwapPool.sol";
-import {StdInvariant} from "forge-std/StdInvariant.sol";
-import {Handler} from "./Handler.t.sol";
+import { StdInvariant } from "forge-std/StdInvariant.sol";
+import { Handler } from "./Handler.t.sol";
 
 contract Invariant is StdInvariant, Test {
-//thses pools have 2 assets 
- ERC20Mock poolToken;
- ERC20Mock mockWeth;
-// we need a x and y balance
+    //thses pools have 2 assets
+    ERC20Mock poolToken;
+    ERC20Mock mockWeth;
+    // we need a x and y balance
 
-int256 constant STARTING_X= 100e18; //Starting ERC20 /poolToken balance
-int256 constant STARTING_Y= 50e18; //Starting WETH 
+    int256 constant STARTING_X = 100e18; //Starting ERC20 /poolToken balance
+    int256 constant STARTING_Y = 50e18; //Starting WETH
 
- //we re goona need the contracts
- PoolFactory factory;
- TSwapPool pool; //pooltoken/weth
- Handler handler;
+    //we re goona need the contracts
+    PoolFactory factory;
+    TSwapPool pool; //pooltoken/weth
+    Handler handler;
 
-    function setUp () public{
+    function setUp() public {
         mockWeth = new ERC20Mock();
         poolToken = new ERC20Mock();
         factory = new PoolFactory(address(mockWeth));
         pool = TSwapPool(factory.createPool(address(poolToken)));
-    
-      //create these initail x and y balances
+
+        //create these initail x and y balances
         poolToken.mint(address(this), uint256(STARTING_X));
         mockWeth.mint(address(this), uint256(STARTING_Y));
 
@@ -36,25 +36,21 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
         mockWeth.approve(address(pool), type(uint256).max);
 
         //Deposit imto the pool,give the starting x and y balances
-        pool.deposit(uint256(STARTING_Y), uint256(STARTING_Y), uint256(STARTING_X),uint64(block.timestamp));
-   handler = new Handler(pool);
-   bytes4[] memory selectors = new bytes4[](2);
-   selectors[0] = Handler.deposit.selector;
-   selectors[1] = Handler.swapPoolTokenForWethBasedOnOutputWeth.selector;
-   
-   targetSelector(FuzzSelector({addr: address(handler),selectors: selectors}));
-   targetContract(address(handler));
+        pool.deposit(uint256(STARTING_Y), uint256(STARTING_Y), uint256(STARTING_X), uint64(block.timestamp));
+        handler = new Handler(pool);
+        bytes4[] memory selectors = new bytes4[](2);
+        selectors[0] = Handler.deposit.selector;
+        selectors[1] = Handler.swapPoolTokenForWethBasedOnOutputWeth.selector;
+
+        targetSelector(FuzzSelector({ addr: address(handler), selectors: selectors }));
+        targetContract(address(handler));
     }
 
-
-    function invariant_constantProductFormulaStaysTrue() public{
-      assertEq(handler.actualDeltaX(), handler.expectedDeltaX());  
+    function invariant_constantProductFormulaStaysTrue() public {
+        assertEq(handler.actualDeltaX(), handler.expectedDeltaX());
     }
 
-
-    function invariant_constantProductFormulaStaysTrueY() public{
-      assertEq(handler.actualDeltaY(), handler.expectedDeltaY());  
+    function invariant_constantProductFormulaStaysTrueY() public {
+        assertEq(handler.actualDeltaY(), handler.expectedDeltaY());
     }
-
-    
 }
