@@ -51,6 +51,7 @@ contract Invariant is StdInvariant, Test {
     }
 
     function invariant_constantProductFormulaStaysTrueY() public {
+        //audit this breaks the protocol invariants
         assertEq(handler.actualDeltaY(), handler.expectedDeltaY());
     }
 }
