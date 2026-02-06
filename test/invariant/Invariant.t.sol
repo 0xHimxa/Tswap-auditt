@@ -29,8 +29,8 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
         pool = TSwapPool(factory.createPool(address(poolToken)));
     
       //create these initail x and y balances
-        poolToken.mint(address(pool), uint256(STARTING_X));
-        mockWeth.mint(address(pool), uint256(STARTING_Y));
+        poolToken.mint(address(this), uint256(STARTING_X));
+        mockWeth.mint(address(this), uint256(STARTING_Y));
 
         poolToken.approve(address(pool), type(uint256).max);
         mockWeth.approve(address(pool), type(uint256).max);
@@ -48,6 +48,13 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
 
 
     function invariant_constantProductFormulaStaysTrue() public{
-        
+      assertEq(handler.actualDeltaX(), handler.expectedDeltaX());  
     }
+
+
+    function invariant_constantProductFormulaStaysTrueY() public{
+      assertEq(handler.actualDeltaY(), handler.expectedDeltaY());  
+    }
+
+    
 }

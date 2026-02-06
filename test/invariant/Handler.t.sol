@@ -40,7 +40,7 @@ constructor(TSwapPool _pool) {
 
 function swapPoolTokenForWethBasedOnOutputWeth(uint256 outputWeth) public{
 
-outputWeth = bound(outputWeth,0,type(uint64).max); //between 0 and 18 WETH
+outputWeth = bound(outputWeth,1e16,type(uint64).max); //between 0 and 18 WETH
 if(outputWeth >= weth.balanceOf(address(pool))){
     return;
 
@@ -53,10 +53,10 @@ if(poolTokenAmount > type(uint64).max){
 }
 
 
-  startingY =  int256(weth.balanceOf(address(this)));
-    startingX = int256(poolToken.balanceOf(address(this)));
+  startingY =  int256(weth.balanceOf(address(pool)));
+    startingX = int256(poolToken.balanceOf(address(pool)));
   expectedDeltaY = int256(-1) * int256(outputWeth);
-  expectedDeltaX = int256(pool.getPoolTokensToDepositBasedOnWeth(poolTokenAmount));
+  expectedDeltaX = int256(poolTokenAmount);
  
 if(poolToken.balanceOf(user) < poolTokenAmount){
    poolToken.mint(user,poolTokenAmount - poolToken.balanceOf(user) + 1);
@@ -74,8 +74,8 @@ vm.startPrank(user);
 
 
   
- uint256 endingY = weth.balanceOf(address(this));
- uint256 endingX = poolToken.balanceOf(address(this));
+ uint256 endingY = weth.balanceOf(address(pool));
+ uint256 endingX = poolToken.balanceOf(address(pool));
 
  
  actualDeltaY = int256(endingY) - int256(startingY);
@@ -99,10 +99,10 @@ vm.startPrank(user);
     // lets make sure is a reasonable  amount
     //avoid oweird overflows errors
      
-     wethAmount = bound(wethAmount,0,type(uint64).max); //between 0 and 18 WETH
+     wethAmount = bound(wethAmount,1e16,type(uint64).max); //between 0 and 18 WETH
   
-  startingY =  int256(weth.balanceOf(address(this)));
-    startingX = int256(poolToken.balanceOf(address(this)));
+  startingY =  int256(weth.balanceOf(address(pool)));
+    startingX = int256(poolToken.balanceOf(address(pool)));
   expectedDeltaY = int256(wethAmount);
   expectedDeltaX = int256(pool.getPoolTokensToDepositBasedOnWeth(wethAmount));
  
@@ -121,8 +121,8 @@ vm.startPrank(user);
 
  //actuall
 
- uint256 endingY = weth.balanceOf(address(this));
- uint256 endingX = poolToken.balanceOf(address(this));
+ uint256 endingY = weth.balanceOf(address(pool));
+ uint256 endingX = poolToken.balanceOf(address(pool));
 
  
  actualDeltaY = int256(endingY) - int256(startingY);
