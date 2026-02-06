@@ -23,7 +23,7 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
         mockWeth = new ERC20Mock();
         poolToken = new ERC20Mock();
         factory = new PoolFactory(address(mockWeth));
-        pool = new TSwapPool(factory.createPool(address(poolToken)));
+        pool = TSwapPool(factory.createPool(address(poolToken)));
     
       //create these initail x and y balances
         poolToken.mint(address(pool), uint256(STARTING_X));
