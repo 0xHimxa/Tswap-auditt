@@ -6,6 +6,7 @@ import { PoolFactory } from "src/PoolFactory.sol";
 import { ERC20Mock } from "../mocks/Erc20.sol";
 import { TSwapPool } from "src/TSwapPool.sol";
 import {StdInvariant} from "forge-std/StdInvariant.sol";
+import {Handler} from "./Handler.t.sol";
 
 contract Invariant is StdInvariant, Test {
 //thses pools have 2 assets 
@@ -19,6 +20,8 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
  //we re goona need the contracts
  PoolFactory factory;
  TSwapPool pool; //pooltoken/weth
+ Handler handler;
+
     function setUp () public{
         mockWeth = new ERC20Mock();
         poolToken = new ERC20Mock();
@@ -34,8 +37,15 @@ int256 constant STARTING_Y= 50e18; //Starting WETH
 
         //Deposit imto the pool,give the starting x and y balances
         pool.deposit(uint256(STARTING_Y), uint256(STARTING_Y), uint256(STARTING_X),uint64(block.timestamp));
-
+   handler = new Handler(pool);
+   bytes4[] memory selectors = new bytes4[](2);
+   selectors[0] = Handler.deposit.selector;
+   selectors[1] = Handler.swapPoolTokenForWethBasedOnOutputWeth.selector;
+   
+   targetSelector(FuzzSelector({addr: address(handler),selectors: selectors}));
+   targetContract(address(handler));
     }
+
 
     function invariant_constantProductFormulaStaysTrue() public{
         

@@ -16,10 +16,10 @@ TSwapPool public pool;
  int256 startingY;
   int256 startingX;
 
-int256 expectedDeltaY;
-int256 expectedDeltaX;
-int256 actualDeltaY;
-int256 actualDeltaX;
+int256 public expectedDeltaY;
+int256 public expectedDeltaX;
+int256 public actualDeltaY;
+int256 public actualDeltaX;
 
 address liquidityProvider = makeAddr("lp");
 address user = makeAddr("swapper");
@@ -41,15 +41,14 @@ constructor(TSwapPool _pool) {
 function swapPoolTokenForWethBasedOnOutputWeth(uint256 outputWeth) public{
 
 outputWeth = bound(outputWeth,0,type(uint64).max); //between 0 and 18 WETH
-if(outputWeth >= weth.balanceOf(pool)){
+if(outputWeth >= weth.balanceOf(address(pool))){
     return;
 
 }
 
-uint256 poolTokenAmount = pool.getInputAmountBasedOnOutput(outputWeth, poolToken.balanceOf(address(pool)), weth.balaneOf(address(pool));
+uint256 poolTokenAmount = pool.getInputAmountBasedOnOutput(outputWeth, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool)));
 
 if(poolTokenAmount > type(uint64).max){
-){
     return;
 }
 
